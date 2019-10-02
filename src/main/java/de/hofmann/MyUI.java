@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.util.*;
 
-@JavaScript({"vaadin://themes/jquerry.js", "vaadin://themes/test.js"})
+@JavaScript({"vaadin://themes/test.js"})
 @Theme("mytheme")
 public class MyUI extends UI {
 
