@@ -1,4 +1,4 @@
-jstest7
+Fido2Vaadin
 ==============
 
 Vaadin with Fido2 Registration And Login
