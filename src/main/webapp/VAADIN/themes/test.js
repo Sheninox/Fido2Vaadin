@@ -10,56 +10,53 @@ function bufferEncode(value) {
         .replace(/=/g, "");
 }
 
-function registerUser(credentialCreationOptionsString){
-    var credentialCreationOptions = JSON.parse(credentialCreationOptionsString);
-    credentialCreationOptions.publicKey.challenge = bufferDecode(credentialCreationOptions.publicKey.challenge);
-    credentialCreationOptions.publicKey.user.id = bufferDecode(credentialCreationOptions.publicKey.user.id);
-    if (credentialCreationOptions.publicKey.excludeCredentials) {
-        for (var i = 0; i < credentialCreationOptions.publicKey.excludeCredentials.length; i++) {
-            credentialCreationOptions.publicKey.excludeCredentials[i].id = bufferDecode(credentialCreationOptions.publicKey.excludeCredentials[i].id);
+function registerUser(publicKeyString){
+    var publicKey = JSON.parse(publicKeyString);
+    publicKey.challenge = bufferDecode(publicKey.challenge);
+    publicKey.user.id = bufferDecode(publicKey.user.id);
+    if (publicKey.excludeCredentials) {
+        for (var i = 0; i < publicKey.excludeCredentials.length; i++) {
+            publicKey.excludeCredentials[i].id = bufferDecode(publicKey.excludeCredentials[i].id);
         }
     }
     navigator.credentials.create({
-        publicKey: credentialCreationOptions.publicKey
-    }).then(function(data){registerCredential(data)})
-}
-function registerCredential(credential) {
-    var attestationObject = credential.response.attestationObject;
-    var clientDataJSON = credential.response.clientDataJSON;
-    var rawId = credential.rawId;
+        publicKey: publicKey
+    }).then(function(credential){
+        var attestationObject = credential.response.attestationObject;
+        var clientDataJSON = credential.response.clientDataJSON;
+        var rawId = credential.rawId;
 
-    var registerString = JSON.stringify({
-        id: credential.id,
-        rawId: bufferEncode(rawId),
-        type: credential.type,
-        response: {
-            attestationObject: bufferEncode(attestationObject),
-            clientDataJSON: bufferEncode(clientDataJSON)
-        }
-    });
-    registerFinish(registerString)
+        var registerString = JSON.stringify({
+            id: credential.id,
+            rawId: bufferEncode(rawId),
+            type: credential.type,
+            response: {
+                attestationObject: bufferEncode(attestationObject),
+                clientDataJSON: bufferEncode(clientDataJSON)
+            }
+        });
+        registerFinish(registerString)
+    })
 }
 function registerSuccess(username) {
         alert("successfully registered " + username + "!");
 }
-function loginCredentialRequest(credentialRequestOptionsString) {
-    var credentialRequestOptions = JSON.parse(credentialRequestOptionsString);
-    credentialRequestOptions.publicKeyCredentialRequestOptions.challenge = bufferDecode(credentialRequestOptions.publicKeyCredentialRequestOptions.challenge);
-    credentialRequestOptions.publicKeyCredentialRequestOptions.allowCredentials.forEach(function (item) {
+
+function loginCredentialRequest(requestString) {
+    var request = JSON.parse(requestString);
+    request.publicKeyCredentialRequestOptions.challenge = bufferDecode(request.publicKeyCredentialRequestOptions.challenge);
+    request.publicKeyCredentialRequestOptions.allowCredentials.forEach(function (item) {
         item.id = bufferDecode(item.id)
     });
     navigator.credentials.get({
-        publicKey: credentialRequestOptions.publicKeyCredentialRequestOptions
-    }).then(function(data){ loginCredential(data)});
-
-}
-function loginCredential(assertion) {
-    var authData = assertion.response.authenticatorData;
-    var clientDataJSON = assertion.response.clientDataJSON;
-    var rawId = assertion.rawId;
-    var sig = assertion.response.signature;
-    var userHandle = assertion.response.userHandle;
-    var losingString = JSON.stringify({
+        publicKey: request.publicKeyCredentialRequestOptions
+    }).then(function(assertion){
+        var authData = assertion.response.authenticatorData;
+        var clientDataJSON = assertion.response.clientDataJSON;
+        var rawId = assertion.rawId;
+        var sig = assertion.response.signature;
+        var userHandle = assertion.response.userHandle;
+        var losingString = JSON.stringify({
             id: assertion.id,
             rawId: bufferEncode(rawId),
             type: assertion.type,
@@ -70,7 +67,8 @@ function loginCredential(assertion) {
                 userHandle: bufferEncode(userHandle)
             }
         });
-    loginFinish(losingString)
+        loginFinish(losingString)
+    });
 }
 
 function loginSuccess(username) {

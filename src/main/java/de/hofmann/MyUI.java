@@ -29,8 +29,8 @@ public class MyUI extends UI {
 
     private RelyingParty relyingParty;
     private SecureRandom random = new SecureRandom();
-    private RegistrationStartResponse registrationStartResponse;
-    private AssertionStartResponse assertionStartResponse;
+    private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions;
+    private AssertionRequest assertionRequest ;
     private CredentialRepositoryImpl credentialRepository = new CredentialRepositoryImpl();
     private GsonBuilder gsonBuilder = new GsonBuilder();
 
@@ -134,8 +134,6 @@ public class MyUI extends UI {
                                     .clientDataJSON(ByteArray.fromBase64(response.getString("clientDataJSON")))
                                     .build();
 
-
-
                             PublicKeyCredential cred = PublicKeyCredential.builder()
                                     .id(ByteArray.fromBase64(jsonObject.getString("id")))
                                     .response(authenticatorAttestationResponse)
@@ -143,27 +141,24 @@ public class MyUI extends UI {
                                             ClientRegistrationExtensionOutputs.builder().build())
                                     .type(PublicKeyCredentialType.PUBLIC_KEY).build();
 
-                            RegistrationFinishRequest finishRequest = new RegistrationFinishRequest("" , cred);
-
-                            if (registrationStartResponse != null) {
+                            if (publicKeyCredentialCreationOptions != null) {
                                 try {
                                     RegistrationResult registrationResult = this.relyingParty
                                             .finishRegistration(FinishRegistrationOptions.builder()
-                                                    .request(registrationStartResponse.getPublicKey())
-                                                    .response(finishRequest.getCredential()).build());
+                                                    .request(publicKeyCredentialCreationOptions)
+                                                    .response(cred).build());
 
-                                    UserIdentity userIdentity = registrationStartResponse.getPublicKey()
-                                            .getUser();
+                                    UserIdentity userIdentity = publicKeyCredentialCreationOptions.getUser();
 
                                     long userId = BytesUtil.bytesToLong(userIdentity.getId().getBytes());
 
                                         this.credentialRepository.addCredential(userId,
                                             registrationResult.getKeyId().getId().getBytes(),
                                             registrationResult.getPublicKeyCose().getBytes(),
-                                            finishRequest.getCredential().getResponse().getParsedAuthenticatorData()
+                                                cred.getResponse().getParsedAuthenticatorData()
                                                     .getSignatureCounter());
 
-                                        registrationStartResponse = null;
+                                    publicKeyCredentialCreationOptions = null;
                                         com.vaadin.ui.JavaScript.getCurrent().execute("registerSuccess(\'"+userIdentity.getDisplayName()+"\')");
 
                                 } catch (RegistrationFailedException e) {
@@ -199,18 +194,16 @@ public class MyUI extends UI {
                                         ClientRegistrationExtensionOutputs.builder().build())
                                 .type(PublicKeyCredentialType.PUBLIC_KEY).build();
 
-                        AssertionFinishRequest finishRequest = new AssertionFinishRequest(jsonObject.getString("id"), cred);
-
                         try {
                             AssertionResult result = this.relyingParty.finishAssertion(
-                                    FinishAssertionOptions.builder().request(assertionStartResponse.getAssertionRequest())
-                                            .response(finishRequest.getCredential()).build());
+                                    FinishAssertionOptions.builder().request(assertionRequest)
+                                            .response(cred).build());
 
                             if (result.isSuccess()) {
                                 if (!this.credentialRepository.updateSignatureCount(result)) {
                                     System.out.println("Failed to update signature count");
                                 }
-                                assertionStartResponse = null;
+                                assertionRequest = null;
                                 com.vaadin.ui.JavaScript.getCurrent().execute("loginSuccess(\'"+result.getUsername()+"\')");
                             }
                         }
@@ -233,19 +226,14 @@ public class MyUI extends UI {
                 user = credentialRepository.getUserbyUsername(name);
             }
 
-            PublicKeyCredentialCreationOptions credentialCreation = this.relyingParty
+            publicKeyCredentialCreationOptions = this.relyingParty
                     .startRegistration(StartRegistrationOptions.builder()
                             .user(UserIdentity.builder().name(name).displayName(name)
                                     .id(new ByteArray(BytesUtil.longToBytes(user.getId()))).build())
                             .build());
 
-            byte[] registrationId = new byte[16];
-            this.random.nextBytes(registrationId);
-            registrationStartResponse = new RegistrationStartResponse(
-                    Base64.getEncoder().encodeToString(registrationId), credentialCreation);
-
             Gson gson = gsonBuilder.create();
-            String startResponseJson = gson.toJson(registrationStartResponse);
+            String startResponseJson = gson.toJson(publicKeyCredentialCreationOptions);
             com.vaadin.ui.JavaScript.getCurrent().execute("registerUser(\'"+startResponseJson+"\')");
         });
         Button Login = new Button("Login", e ->{
@@ -254,12 +242,11 @@ public class MyUI extends UI {
             byte[] assertionId = new byte[16];
             this.random.nextBytes(assertionId);
 
-            assertionStartResponse = new AssertionStartResponse(
-                    Base64.getEncoder().encodeToString(assertionId), this.relyingParty
-                    .startAssertion(StartAssertionOptions.builder().username(username).build()));
+            assertionRequest =  this.relyingParty
+                    .startAssertion(StartAssertionOptions.builder().username(username).build());
 
             Gson gson = gsonBuilder.create();
-            String startResponseJson = gson.toJson(assertionStartResponse);
+            String startResponseJson = gson.toJson(assertionRequest);
 
             com.vaadin.ui.JavaScript.getCurrent().execute("loginCredentialRequest(\'"+startResponseJson+"\')");
         });
