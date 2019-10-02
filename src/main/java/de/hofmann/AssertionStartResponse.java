@@ -8,14 +8,14 @@ public class AssertionStartResponse {
 
   private final String assertionId;
 
-  private final PublicKeyCredentialRequestOptions publicKey;
+  private final PublicKeyCredentialRequestOptions publicKeyCredentialRequestOptions;
 
   @JsonIgnore
   private final AssertionRequest assertionRequest;
 
   public AssertionStartResponse(String assertionId, AssertionRequest assertionRequest) {
     this.assertionId = assertionId;
-    this.publicKey = assertionRequest
+    this.publicKeyCredentialRequestOptions = assertionRequest
         .getPublicKeyCredentialRequestOptions();
     this.assertionRequest = assertionRequest;
   }
@@ -24,8 +24,8 @@ public class AssertionStartResponse {
     return this.assertionId;
   }
 
-  public PublicKeyCredentialRequestOptions getPublicKey() {
-    return this.publicKey;
+  public PublicKeyCredentialRequestOptions getPublicKeyCredentialRequestOptions() {
+    return this.publicKeyCredentialRequestOptions;
   }
 
   public AssertionRequest getAssertionRequest() {

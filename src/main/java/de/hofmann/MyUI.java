@@ -32,11 +32,85 @@ public class MyUI extends UI {
     private RegistrationStartResponse registrationStartResponse;
     private AssertionStartResponse assertionStartResponse;
     private CredentialRepositoryImpl credentialRepository = new CredentialRepositoryImpl();
+    private GsonBuilder gsonBuilder = new GsonBuilder();
+
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         final VerticalLayout layout = new VerticalLayout();
         TextField usernameField = new TextField("Username");
 
+        gsonBuilder.registerTypeAdapter(ByteArray.class, new TypeAdapter<ByteArray>() {
+            @Override
+            public void write(JsonWriter jsonWriter, ByteArray byteArray) throws IOException {
+                String base64EncodedChallange = Base64.getEncoder().encodeToString(byteArray.getBytes());
+                jsonWriter.value(base64EncodedChallange);
+            }
+
+            @Override
+            public ByteArray read(JsonReader jsonReader) {
+                return null;
+            }
+        });
+        gsonBuilder.registerTypeAdapter(PublicKeyCredentialType.class, new TypeAdapter<PublicKeyCredentialType>() {
+            @Override
+            public void write(JsonWriter jsonWriter, PublicKeyCredentialType publicKeyCredentialType) throws IOException {
+                jsonWriter.value(publicKeyCredentialType.toJsonString());
+            }
+
+            @Override
+            public PublicKeyCredentialType read(JsonReader jsonReader) {
+                return null;
+            }
+        });
+        gsonBuilder.registerTypeAdapter(COSEAlgorithmIdentifier.class, new TypeAdapter<COSEAlgorithmIdentifier>() {
+            @Override
+            public void write(JsonWriter jsonWriter, COSEAlgorithmIdentifier coseAlgorithmIdentifier) throws IOException {
+                jsonWriter.value(Long.toString(coseAlgorithmIdentifier.toJsonNumber()));
+            }
+
+            @Override
+            public COSEAlgorithmIdentifier read(JsonReader jsonReader) {
+                return null;
+            }
+
+        });
+        gsonBuilder.registerTypeAdapter(AuthenticatorTransport.class, new TypeAdapter<AuthenticatorTransport>() {
+            @Override
+            public void write(JsonWriter jsonWriter, AuthenticatorTransport authenticatorTransport) throws IOException {
+                jsonWriter.value(authenticatorTransport.toJsonString());
+            }
+
+            @Override
+            public AuthenticatorTransport read(JsonReader jsonReader) {
+                return null;
+            }
+
+        });
+        gsonBuilder.registerTypeAdapter(AttestationConveyancePreference.class, new TypeAdapter<AttestationConveyancePreference>() {
+            @Override
+            public void write(JsonWriter jsonWriter, AttestationConveyancePreference attestationConveyancePreference) throws IOException {
+                jsonWriter.value(attestationConveyancePreference.toJsonString());
+            }
+
+            @Override
+            public AttestationConveyancePreference read(JsonReader jsonReader) {
+                return null;
+            }
+
+        });
+        gsonBuilder.registerTypeAdapter(UserVerificationRequirement.class, new TypeAdapter<UserVerificationRequirement>() {
+            @Override
+            public void write(JsonWriter jsonWriter, UserVerificationRequirement userVerificationRequirement) throws IOException {
+                jsonWriter.value(userVerificationRequirement.toJsonString());
+            }
+
+            @Override
+            public UserVerificationRequirement read(JsonReader jsonReader) {
+                return null;
+            }
+
+        });
+        gsonBuilder.registerTypeAdapter(Optional.class, new OptionalAdapter());
 
         Set<String> origins = new HashSet<>();
         origins.add("http://localhost:8080");
@@ -134,8 +208,6 @@ public class MyUI extends UI {
                                     System.out.println("Failed to update signature count");
                                 }
 
-                                long userId = BytesUtil.bytesToLong(result.getUserHandle().getBytes());
-
                                 com.vaadin.ui.JavaScript.getCurrent().execute("loginSuccess(\'"+result.getUsername()+"\')");
                             }
                         }
@@ -169,55 +241,6 @@ public class MyUI extends UI {
             registrationStartResponse = new RegistrationStartResponse(
                     Base64.getEncoder().encodeToString(registrationId), credentialCreation);
 
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(ByteArray.class, new TypeAdapter<ByteArray>() {
-                @Override
-                public void write(JsonWriter jsonWriter, ByteArray byteArray) throws IOException {
-                    String base64EncodedChallange = Base64.getEncoder().encodeToString(byteArray.getBytes());
-                    jsonWriter.value(base64EncodedChallange);
-                }
-
-                @Override
-                public ByteArray read(JsonReader jsonReader) {
-                    return null;
-                }
-            });
-            gsonBuilder.registerTypeAdapter(PublicKeyCredentialType.class, new TypeAdapter<PublicKeyCredentialType>() {
-                @Override
-                public void write(JsonWriter jsonWriter, PublicKeyCredentialType publicKeyCredentialType) throws IOException {
-                    jsonWriter.value(publicKeyCredentialType.toJsonString());
-                }
-
-                @Override
-                public PublicKeyCredentialType read(JsonReader jsonReader) {
-                    return null;
-                }
-            });
-            gsonBuilder.registerTypeAdapter(COSEAlgorithmIdentifier.class, new TypeAdapter<COSEAlgorithmIdentifier>() {
-                @Override
-                public void write(JsonWriter jsonWriter, COSEAlgorithmIdentifier coseAlgorithmIdentifier) throws IOException {
-                    jsonWriter.value(Long.toString(coseAlgorithmIdentifier.toJsonNumber()));
-                }
-
-                @Override
-                public COSEAlgorithmIdentifier read(JsonReader jsonReader) {
-                    return null;
-                }
-
-            });
-            gsonBuilder.registerTypeAdapter(AuthenticatorTransport.class, new TypeAdapter<AuthenticatorTransport>() {
-                @Override
-                public void write(JsonWriter jsonWriter, AuthenticatorTransport authenticatorTransport) throws IOException {
-                    jsonWriter.value(authenticatorTransport.toJsonString());
-                }
-
-                @Override
-                public AuthenticatorTransport read(JsonReader jsonReader) {
-                    return null;
-                }
-
-            });
-
             Gson gson = gsonBuilder.create();
             String startResponseJson = gson.toJson(registrationStartResponse);
             com.vaadin.ui.JavaScript.getCurrent().execute("registerUser(\'"+startResponseJson+"\')");
@@ -231,59 +254,6 @@ public class MyUI extends UI {
             assertionStartResponse = new AssertionStartResponse(
                     Base64.getEncoder().encodeToString(assertionId), this.relyingParty
                     .startAssertion(StartAssertionOptions.builder().username(username).build()));
-
-
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(ByteArray.class, new TypeAdapter<ByteArray>() {
-                @Override
-                public void write(JsonWriter jsonWriter, ByteArray byteArray) throws IOException {
-                    String base64EncodedChallange = Base64.getEncoder().encodeToString(byteArray.getBytes());
-                    jsonWriter.value(base64EncodedChallange);
-                }
-
-                @Override
-                public ByteArray read(JsonReader jsonReader) {
-                    return null;
-                }
-            });
-            gsonBuilder.registerTypeAdapter(PublicKeyCredentialType.class, new TypeAdapter<PublicKeyCredentialType>() {
-                @Override
-                public void write(JsonWriter jsonWriter, PublicKeyCredentialType publicKeyCredentialType) throws IOException {
-                    jsonWriter.value(publicKeyCredentialType.toJsonString());
-                }
-
-                @Override
-                public PublicKeyCredentialType read(JsonReader jsonReader) {
-                    return null;
-                }
-            });
-            gsonBuilder.registerTypeAdapter(COSEAlgorithmIdentifier.class, new TypeAdapter<COSEAlgorithmIdentifier>() {
-                @Override
-                public void write(JsonWriter jsonWriter, COSEAlgorithmIdentifier coseAlgorithmIdentifier) throws IOException {
-                    jsonWriter.value(Long.toString(coseAlgorithmIdentifier.toJsonNumber()));
-                }
-
-                @Override
-                public COSEAlgorithmIdentifier read(JsonReader jsonReader) {
-                    return null;
-                }
-
-            });
-            gsonBuilder.registerTypeAdapter(AuthenticatorTransport.class, new TypeAdapter<AuthenticatorTransport>() {
-                @Override
-                public void write(JsonWriter jsonWriter, AuthenticatorTransport authenticatorTransport) throws IOException {
-                    jsonWriter.value(authenticatorTransport.toJsonString());
-                }
-
-                @Override
-                public AuthenticatorTransport read(JsonReader jsonReader) {
-                    return null;
-                }
-
-            });
-
-            gsonBuilder.registerTypeAdapter(Optional.class, new OptionalAdapter());
 
             Gson gson = gsonBuilder.create();
             String startResponseJson = gson.toJson(assertionStartResponse);

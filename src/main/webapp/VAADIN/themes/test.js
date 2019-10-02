@@ -19,8 +19,6 @@ function registerUser(credentialCreationOptionsString){
             credentialCreationOptions.publicKey.excludeCredentials[i].id = bufferDecode(credentialCreationOptions.publicKey.excludeCredentials[i].id);
         }
     }
-    credentialCreationOptions.attestation = "none";
-    credentialCreationOptions.publicKey.attestation = "none";
     credentialCreationOptions.publicKey.excludeCredentials = undefined;
     navigator.credentials.create({
         publicKey: credentialCreationOptions.publicKey
@@ -48,22 +46,12 @@ function registerSuccess(username) {
 }
 function loginCredentialRequest(credentialRequestOptionsString) {
     var credentialRequestOptions = JSON.parse(credentialRequestOptionsString);
-
-    credentialRequestOptions.publicKeyCredentialRequestOptions = credentialRequestOptions.assertionRequest.publicKeyCredentialRequestOptions;
-
-    credentialRequestOptions.publicKeyCredentialRequestOptions.challenge = bufferDecode(credentialRequestOptions.publicKey.challenge);
-    credentialRequestOptions.publicKeyCredentialRequestOptions.userVerification = 'preferred';
-    credentialRequestOptions.publicKey.challenge = bufferDecode(credentialRequestOptions.publicKey.challenge);
-    credentialRequestOptions.publicKey.userVerification = 'preferred';
-
-    credentialRequestOptions.publicKey.allowCredentials.forEach(function (item) {
-        item.id = bufferDecode(item.id)
-    });
+    credentialRequestOptions.publicKeyCredentialRequestOptions.challenge = bufferDecode(credentialRequestOptions.publicKeyCredentialRequestOptions.challenge);
     credentialRequestOptions.publicKeyCredentialRequestOptions.allowCredentials.forEach(function (item) {
         item.id = bufferDecode(item.id)
     });
     navigator.credentials.get({
-        publicKey: credentialRequestOptions.publicKey
+        publicKey: credentialRequestOptions.publicKeyCredentialRequestOptions
     }).then(function(data){ loginCredential(data)});
 
 }

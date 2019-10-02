@@ -18,10 +18,10 @@ public class RegistrationStartResponse {
   private final PublicKeyCredentialCreationOptions publicKey;
 
   public RegistrationStartResponse(String registrationId,
-                                   PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions) {
+                                   PublicKeyCredentialCreationOptions publicKey) {
     this.status = Status.OK;
     this.registrationId = registrationId;
-    this.publicKey = publicKeyCredentialCreationOptions;
+    this.publicKey = publicKey;
   }
 
   public RegistrationStartResponse(Status status) {
