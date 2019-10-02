@@ -19,7 +19,6 @@ function registerUser(credentialCreationOptionsString){
             credentialCreationOptions.publicKey.excludeCredentials[i].id = bufferDecode(credentialCreationOptions.publicKey.excludeCredentials[i].id);
         }
     }
-    credentialCreationOptions.publicKey.excludeCredentials = undefined;
     navigator.credentials.create({
         publicKey: credentialCreationOptions.publicKey
     }).then(function(data){registerCredential(data)})
@@ -42,7 +41,6 @@ function registerCredential(credential) {
 }
 function registerSuccess(username) {
         alert("successfully registered " + username + "!");
-
 }
 function loginCredentialRequest(credentialRequestOptionsString) {
     var credentialRequestOptions = JSON.parse(credentialRequestOptionsString);

@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.util.*;
 
-@JavaScript({"vaadin://themes/test.js"})
+@JavaScript("vaadin://themes/test.js")
 @Theme("mytheme")
 public class MyUI extends UI {
 
@@ -134,6 +134,8 @@ public class MyUI extends UI {
                                     .clientDataJSON(ByteArray.fromBase64(response.getString("clientDataJSON")))
                                     .build();
 
+
+
                             PublicKeyCredential cred = PublicKeyCredential.builder()
                                     .id(ByteArray.fromBase64(jsonObject.getString("id")))
                                     .response(authenticatorAttestationResponse)
@@ -155,14 +157,15 @@ public class MyUI extends UI {
 
                                     long userId = BytesUtil.bytesToLong(userIdentity.getId().getBytes());
 
-                                    this.credentialRepository.addCredential(userId,
+                                        this.credentialRepository.addCredential(userId,
                                             registrationResult.getKeyId().getId().getBytes(),
                                             registrationResult.getPublicKeyCose().getBytes(),
                                             finishRequest.getCredential().getResponse().getParsedAuthenticatorData()
                                                     .getSignatureCounter());
 
-                                    registrationStartResponse = null;
-                                    com.vaadin.ui.JavaScript.getCurrent().execute("registerSuccess(\'"+userIdentity.getDisplayName()+"\')");
+                                        registrationStartResponse = null;
+                                        com.vaadin.ui.JavaScript.getCurrent().execute("registerSuccess(\'"+userIdentity.getDisplayName()+"\')");
+
                                 } catch (RegistrationFailedException e) {
                                     e.printStackTrace();
                                     System.out.println(e.getMessage());
@@ -207,7 +210,7 @@ public class MyUI extends UI {
                                 if (!this.credentialRepository.updateSignatureCount(result)) {
                                     System.out.println("Failed to update signature count");
                                 }
-
+                                assertionStartResponse = null;
                                 com.vaadin.ui.JavaScript.getCurrent().execute("loginSuccess(\'"+result.getUsername()+"\')");
                             }
                         }

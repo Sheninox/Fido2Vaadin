@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6468138a-63ab-4818-a645-90a6cb835d2b" name="Default Changelist" comment="removed some avoidable javascript and renamed project in the IDE">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+    <list default="true" id="6468138a-63ab-4818-a645-90a6cb835d2b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/hofmann/AssertionStartResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/hofmann/AssertionStartResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/hofmann/MyUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/hofmann/MyUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/hofmann/RegistrationStartResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/hofmann/RegistrationStartResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/VAADIN/themes/test.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/VAADIN/themes/test.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -186,7 +183,7 @@
       <workItem from="1569230997399" duration="5875000" />
       <workItem from="1569833554370" duration="16414000" />
       <workItem from="1569911347561" duration="40556000" />
-      <workItem from="1570012497284" duration="1696000" />
+      <workItem from="1570012497284" duration="6089000" />
     </task>
     <task id="LOCAL-00001" summary="removed unnecessary JQuerry files">
       <created>1570012602405</created>
@@ -195,7 +192,14 @@
       <option name="project" value="LOCAL" />
       <updated>1570012602405</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="removed some avoidable javascript and renamed project in the IDE">
+      <created>1570014212327</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1570014212327</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
